@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
       ),
       // Change this to modify the title in the home page
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
