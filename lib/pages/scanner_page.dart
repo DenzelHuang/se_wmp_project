@@ -6,8 +6,7 @@ class ScannerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Scanner
-       Page")),
+      appBar: AppBar(title: const Text("Scanner Page")),
     );
   }
 }
