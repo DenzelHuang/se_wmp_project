@@ -8,29 +8,39 @@ class PracticePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Practice Page")),
       body: const Padding(
-        padding: EdgeInsets.all(16.0), // Margin for the entire content
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // Align text to the start
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 8.0), // Margin below the first Text
-              child: Text(
-                "This is the first text view",
-                style: TextStyle(fontSize: 18),
-              ),
+            SizedBox(height: 30), // Adds space at the top
+
+            // "Guess the Word" title
+            Text(
+              "Guess the Word:",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 8.0), // Margin below the second Text
-              child: Text(
-                "This is the second text view",
-                style: TextStyle(fontSize: 18),
-              ),
+            SizedBox(height: 20),
+
+            // Placeholder for the meaning (for the user to guess the word)
+            Text(
+              "Word", // Placeholder
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height: 20),
+
+            // Text Field for the user to input their guess (just a placeholder for now)
             TextField(
               decoration: InputDecoration(
-                labelText: 'Enter some text',
+                hintText: "Your guess...",
                 border: OutlineInputBorder(),
               ),
+            ),
+            SizedBox(height: 20),
+
+            // Placeholder Button to check the answer
+            ElevatedButton(
+              onPressed: null, // Placeholder action, no functionality yet
+              child: Text("Check Answer"),
             ),
           ],
         ),
