@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
+import 'package:se_wmp_project/pages/practice_page.dart';
+import 'package:se_wmp_project/pages/courses_page.dart';
+import 'package:se_wmp_project/pages/dictionary_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +44,64 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blue, // FloatingActionButton color
         ),
       ),
-      home: const HomePage(),
+      home: const BottomNavBarApp(), // Set the home to the new widget
+    );
+  }
+}
+
+class BottomNavBarApp extends StatefulWidget {
+  const BottomNavBarApp({super.key});
+
+  @override
+  State<BottomNavBarApp> createState() => _BottomNavBarAppState();
+}
+
+class _BottomNavBarAppState extends State<BottomNavBarApp> {
+  int _selectedIndex = 0;
+
+  static const List<Widget> _widgetOptions = <Widget>[
+    HomePage(),
+    CoursesPage(),
+    PracticePage(),
+    DictionaryPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.blue, // Active icon color
+        unselectedItemColor: Colors.grey, // Inactive icon color
+        backgroundColor: Colors.white, // Background color of the navbar
+        type: BottomNavigationBarType.fixed, // Fixes shifting when more than 3 items
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Course',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.book),
+            label: 'Practice',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book), // Appropriate icon for dictionary
+            label: 'Dictionary',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
