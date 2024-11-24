@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
-import 'package:se_wmp_project/pages/practice_page.dart';
+import 'package:se_wmp_project/pages/scanner_page.dart';
 import 'package:se_wmp_project/pages/courses_page.dart';
 import 'package:se_wmp_project/pages/dictionary_page.dart';
 
@@ -62,7 +62,7 @@ class _BottomNavBarAppState extends State<BottomNavBarApp> {
   static const List<Widget> _widgetOptions = <Widget>[
     HomePage(),
     CoursesPage(),
-    PracticePage(),
+    ScannerPage(),
     DictionaryPage(),
   ];
 
@@ -80,7 +80,8 @@ class _BottomNavBarAppState extends State<BottomNavBarApp> {
         selectedItemColor: Colors.blue, // Active icon color
         unselectedItemColor: Colors.grey, // Inactive icon color
         backgroundColor: Colors.white, // Background color of the navbar
-        type: BottomNavigationBarType.fixed, // Fixes shifting when more than 3 items
+        type: BottomNavigationBarType
+            .fixed, // Fixes shifting when more than 3 items
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -91,8 +92,8 @@ class _BottomNavBarAppState extends State<BottomNavBarApp> {
             label: 'Course',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Practice',
+            icon: Icon(Icons.camera_alt),
+            label: 'Scanner',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.menu_book), // Appropriate icon for dictionary
