@@ -59,10 +59,10 @@ class BottomNavBarApp extends StatefulWidget {
 class _BottomNavBarAppState extends State<BottomNavBarApp> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
+  static final List<Widget> _widgetOptions = <Widget>[
+    const HomePage(),
     CoursesPage(),
-    ScannerPage(),
+    const ScannerPage(),
     DictionaryPage(),
   ];
 
