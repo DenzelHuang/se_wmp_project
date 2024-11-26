@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'word_detail_page.dart';
 
-class DictionaryPage extends StatelessWidget {
-  final List<Map<String, String>> vocabularyList = [
-    {"word": "こんにちは", "meaning": "Hello"},
-    {"word": "ありがとう", "meaning": "Thank you"},
-    {"word": "さようなら", "meaning": "Goodbye"},
-  ];
+class CourseDetailPage extends StatelessWidget {
+  final String courseName;
+  final List<Map<String, String>> words; // Word-meaning pairs
 
-  DictionaryPage({super.key});
+  const CourseDetailPage({
+    super.key,
+    required this.courseName,
+    required this.words,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Dictionary")),
+      appBar: AppBar(title: Text("$courseName Vocabularies")),
       body: ListView.builder(
-        itemCount: vocabularyList.length,
+        itemCount: words.length,
         itemBuilder: (context, index) {
-          String word = vocabularyList[index]["word"]!;
-          String meaning = vocabularyList[index]["meaning"]!;
+          String word = words[index].keys.first;
+          String meaning = words[index][word]!;
 
           return ListTile(
             title: Text(word),
             subtitle: const Text("Tap to see details"),
             onTap: () {
-              // Navigate to WordDetailPage with word and meaning
+              // Navigate to WordDetailPage with the selected word and its meaning
               Navigator.push(
                 context,
                 MaterialPageRoute(
