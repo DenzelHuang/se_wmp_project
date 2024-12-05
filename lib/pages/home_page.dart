@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:se_wmp_project/widgets/app_drawer.dart';
 import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/pages/practice_page.dart';
 
@@ -13,6 +14,7 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text("Home Page")),
+      drawer: const AppDrawer(),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

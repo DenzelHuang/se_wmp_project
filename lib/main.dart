@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
+import 'package:se_wmp_project/pages/login_page.dart';
 import 'package:se_wmp_project/pages/scanner_page.dart';
 import 'package:se_wmp_project/pages/courses_page.dart';
 import 'package:se_wmp_project/pages/dictionary_page.dart';
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blue, // FloatingActionButton color
         ),
       ),
-      home: const BottomNavBarApp(), // Set the home to the new widget
+      home: const LoginPage(), // Set the home to the new widget
     );
   }
 }

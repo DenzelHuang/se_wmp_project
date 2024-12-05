@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:se_wmp_project/widgets/app_drawer.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -52,6 +53,7 @@ class _ScannerPageState extends State<ScannerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Scanner Page")),
+      drawer: const AppDrawer(),
       body: Center(
         // Center the entire content both horizontally and vertically
         child: Column(

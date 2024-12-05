@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:se_wmp_project/widgets/app_drawer.dart';
 import 'course_detail_page.dart';
 
 class CoursesPage extends StatelessWidget {
@@ -32,6 +33,7 @@ class CoursesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Courses")),
+      drawer: const AppDrawer(),
       body: ListView.builder(
         itemCount: courses.length,
         itemBuilder: (context, index) {
