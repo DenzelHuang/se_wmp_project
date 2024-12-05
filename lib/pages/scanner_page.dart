@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:se_wmp_project/widgets/fullscreen_image.dart';
+import 'package:translator/translator.dart';
+import 'package:provider/provider.dart';
 import 'package:se_wmp_project/widgets/app_drawer.dart';
+import 'package:se_wmp_project/providers/scanner_provider.dart';
+import 'package:se_wmp_project/providers/language_provider.dart';
 
 class ScannerPage extends StatefulWidget {
   const ScannerPage({super.key});
@@ -12,17 +17,16 @@ class ScannerPage extends StatefulWidget {
 }
 
 class _ScannerPageState extends State<ScannerPage> {
-  File? _selectedImage;
-  String _extractedText = ''; // State variable for extracted text
   final ImagePicker _picker = ImagePicker();
+  final translator = GoogleTranslator();
+  String _translationSource = "";
 
   // Method to capture an image using the camera
   Future<void> _captureImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.camera);
     if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+      Provider.of<ScannerProvider>(context, listen: false)
+          .setImage(File(image.path));
     }
   }
 
@@ -30,98 +34,222 @@ class _ScannerPageState extends State<ScannerPage> {
   Future<void> _pickImageFromGallery() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+      Provider.of<ScannerProvider>(context, listen: false)
+          .setImage(File(image.path));
     }
   }
 
   // Method to process the selected image and extract text
   Future<void> _processImage() async {
-    if (_selectedImage != null) {
-      final inputImage = InputImage.fromFilePath(_selectedImage!.path);
+    final scannerProvider =
+        Provider.of<ScannerProvider>(context, listen: false);
+    if (scannerProvider.selectedImage != null) {
+      final inputImage =
+          InputImage.fromFilePath(scannerProvider.selectedImage!.path);
       final textRecognizer = TextRecognizer();
       final recognizedText = await textRecognizer.processImage(inputImage);
 
-      setState(() {
-        _extractedText = recognizedText.text; // Update extracted text
-      });
+      scannerProvider.setOcrText(recognizedText.text);
 
-      // Display a snackbar to notify the user that text extraction is complete
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Text extraction complete!")),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Please select or capture an image first.")),
+        const SnackBar(content: Text("Please select or capture an image first.")),
       );
+    }
+  }
+
+  // Method to translate text to English
+  Future<void> _translateText() async {
+    final scannerProvider =
+        Provider.of<ScannerProvider>(context, listen: false);
+    final selectedLanguage =
+        Provider.of<LanguageProvider>(context, listen: false).selectedLanguage;
+    
+    // Set the translation source in the provider
+    scannerProvider.setTranslatedSource(selectedLanguage);
+
+    if (scannerProvider.ocrText.isNotEmpty) {
+      try {
+        final translation = await translator.translate(
+          scannerProvider.ocrText,
+          from: _getLanguageCode(selectedLanguage),
+          to: 'en',
+        );
+
+        scannerProvider.setTranslatedText(translation.text);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Translation complete!")),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to translate text.")),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("No text to translate.")),
+      );
+    }
+  }
+
+  // Helper to get language code
+  String _getLanguageCode(String language) {
+    switch (language.toLowerCase()) {
+      case 'french':
+        return 'fr';
+      case 'japanese':
+        return 'ja';
+      default:
+        return 'auto';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final scannerProvider = Provider.of<ScannerProvider>(context);
+
+    // Update the local variable with the value from the provider
+    _translationSource = scannerProvider.translatedSource;
+    
     return Scaffold(
       appBar: AppBar(title: const Text("Scanner Page")),
       drawer: const AppDrawer(),
       body: SingleChildScrollView(
-        // Wrap the column with SingleChildScrollView
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Display the selected image
-              if (_selectedImage != null)
-                Image.file(
-                  _selectedImage!,
-                  height: 250,
-                  fit: BoxFit.cover,
-                )
-              else
-                const Icon(
-                  Icons.image,
-                  size: 150,
-                  color: Colors.grey,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Display selected image
+                if (scannerProvider.selectedImage != null)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FullscreenImageView(
+                            imageFile: scannerProvider.selectedImage!,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.file(
+                      scannerProvider.selectedImage!,
+                      height: 250,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  const Icon(Icons.image, size: 150, color: Colors.grey),
+
+                const SizedBox(height: 20),
+
+                // Buttons to capture/select images
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _captureImage,
+                        icon: const Icon(Icons.camera_alt),
+                        label: const Text("Take a Photo"),
+                      ),
+                    ),
+                    const SizedBox(width: 10), // Add spacing between the buttons
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _pickImageFromGallery,
+                        icon: const Icon(Icons.photo_library),
+                        label: const Text("Gallery"),
+                      ),
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 20),
 
-              // Button to capture image
-              ElevatedButton.icon(
-                onPressed: _captureImage,
-                icon: const Icon(Icons.camera_alt),
-                label: const Text("Take a Photo"),
-              ),
-              const SizedBox(height: 10),
+                // Button to process image
+                ElevatedButton.icon(
+                  onPressed: _processImage,
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text("Scan"),
+                ),
+                const SizedBox(height: 20),
 
-              // Button to pick image from gallery
-              ElevatedButton.icon(
-                onPressed: _pickImageFromGallery,
-                icon: const Icon(Icons.photo_library),
-                label: const Text("Select from Gallery"),
-              ),
-              const SizedBox(height: 30),
-
-              // Button to process image
-              ElevatedButton.icon(
-                onPressed: _processImage,
-                icon: const Icon(Icons.check_circle),
-                label: const Text("Scan"),
-              ),
-              const SizedBox(height: 20),
-
-              // Display the extracted text
-              if (_extractedText.isNotEmpty)
-                Padding(
+                // OCR Output
+                Container(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    _extractedText,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    textAlign: TextAlign.center,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 1),  // Border color and width
+                    borderRadius: BorderRadius.circular(8),  // Optional: to make rounded corners
+                  ),
+                  child: TextField(
+                    controller: TextEditingController(
+                      text: scannerProvider.ocrText,
+                    ), // Pre-fill with OCR text
+                    maxLines: 10,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none, // Remove default border of the TextField
+                      hintText: "Extracted text will appear here...",
+                    ),
+                    onChanged: (value) {
+                      scannerProvider.setOcrText(value);
+                    },
                   ),
                 ),
-            ],
+                const SizedBox(height: 20),
+
+                // Buttons for translation and dictionary
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Translate button
+                    Expanded(child: 
+                      ElevatedButton(
+                        onPressed: _translateText,
+                        child: const Text("Translate to English"),
+                      )
+                    ),
+                    const SizedBox(width: 10), // Add spacing between the buttons
+
+                    // Add to Dictionary button
+                    Expanded(child: 
+                      ElevatedButton(
+                        onPressed: () {}, // Placeholder function
+                        child: const Text("Add to Dictionary"),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Display the translation source
+                if (_translationSource.isNotEmpty)
+                  Text(
+                    "Translated from ${scannerProvider.translatedSource}",
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                const SizedBox(height: 10),
+
+                // Translation output
+                if (scannerProvider.translatedText.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.all(8.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    width: MediaQuery.of(context).size.width - 32, // Same width as OCR container
+                    child: Text(
+                      scannerProvider.translatedText,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
