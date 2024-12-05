@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
 import 'package:se_wmp_project/pages/scanner_page.dart';
 import 'package:se_wmp_project/pages/courses_page.dart';
 import 'package:se_wmp_project/pages/dictionary_page.dart';
+import 'package:se_wmp_project/providers/language_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        // Initialize LanguageProvider for state management
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

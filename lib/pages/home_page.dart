@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/pages/practice_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -6,9 +8,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Temporary placeholders for selected language and course
-    const String selectedLanguage = "Japanese";
-    const String selectedCourse = "Course1";
+    // Access the LanguageProvider to get the current selected language
+    final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Home Page")),
@@ -21,33 +22,25 @@ class HomePage extends StatelessWidget {
               "Selected Language:",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            const Text(
-              selectedLanguage,
-              style: TextStyle(fontSize: 16),
+            Text(
+              languageProvider.selectedLanguage, // Show the selected language
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),
 
-            // Display the current selected course
-            const Text(
-              "Selected Course:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // Button to open the language selection dialog
+            ElevatedButton(
+              onPressed: () {
+                _showLanguageSelectionDialog(context);
+              },
+              child: const Text("Change Language"),
             ),
-            const Text(
-              selectedCourse,
-              style: TextStyle(fontSize: 16),
-            ),
+
             const SizedBox(height: 30),
 
-            // Button to practice
+            // Button to navigate to the Practice page
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              ),
-              child: const Text(
-                "Practice Now",
-                style: TextStyle(fontSize: 16),
-              ),
+              child: const Text("Practice Now"),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -60,6 +53,41 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // Show a dialog to select a new language
+  void _showLanguageSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Select Language"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Option to select French
+              ListTile(
+                title: const Text("French"),
+                onTap: () {
+                  Provider.of<LanguageProvider>(context, listen: false)
+                      .changeLanguage("French"); // Change to French
+                  Navigator.pop(context); // Close the dialog
+                },
+              ),
+              // Option to select Japanese
+              ListTile(
+                title: const Text("Japanese"),
+                onTap: () {
+                  Provider.of<LanguageProvider>(context, listen: false)
+                      .changeLanguage("Japanese"); // Change to Japanese
+                  Navigator.pop(context); // Close the dialog
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
