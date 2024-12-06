@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
 import 'package:se_wmp_project/pages/login_page.dart';
 import 'package:se_wmp_project/pages/scanner_page.dart';
 import 'package:se_wmp_project/pages/courses_page.dart';
 import 'package:se_wmp_project/pages/dictionary_page.dart';
-import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/providers/scanner_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
