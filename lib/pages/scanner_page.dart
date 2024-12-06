@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -19,6 +20,7 @@ class ScannerPage extends StatefulWidget {
 class _ScannerPageState extends State<ScannerPage> {
   final ImagePicker _picker = ImagePicker();
   final translator = GoogleTranslator();
+  final FlutterTts _flutterTts = FlutterTts();
   String _translationSource = "";
 
   // Method to capture an image using the camera
@@ -108,6 +110,22 @@ class _ScannerPageState extends State<ScannerPage> {
     }
   }
 
+  // Text-to-Speech Functionality
+  Future<void> _speak(String text, String language) async {
+    if (text.isNotEmpty) {
+      await _flutterTts.setLanguage(language); // Dynamically set language
+      await _flutterTts.setSpeechRate(0.5); // Set speech rate
+      await _flutterTts.setVolume(1.0); // Set volume
+      await _flutterTts.speak(text); // Speak the text
+    }
+  }
+
+  @override
+  void dispose() {
+    _flutterTts.stop(); // Stop any ongoing speech when the widget is disposed
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final scannerProvider = Provider.of<ScannerProvider>(context);
@@ -171,10 +189,17 @@ class _ScannerPageState extends State<ScannerPage> {
                 ),
 
                 // Button to process image
-                ElevatedButton.icon(
-                  onPressed: _processImage,
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text("Scan"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child:
+                      ElevatedButton.icon(
+                        onPressed: _processImage,
+                        icon: const Icon(Icons.check_circle),
+                        label: const Text("Scan"),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
 
@@ -223,7 +248,62 @@ class _ScannerPageState extends State<ScannerPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
+
+                // TTS Buttons for OCR and Translation
+                if (scannerProvider.ocrText.isNotEmpty || scannerProvider.translatedText.isNotEmpty)
+                  Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (scannerProvider.ocrText.isNotEmpty)
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  final selectedLanguage =
+                                      Provider.of<LanguageProvider>(context, listen: false)
+                                          .selectedLanguage;
+                                  _speak(
+                                    scannerProvider.ocrText,
+                                    _getLanguageCode(selectedLanguage), // Pass the selected language
+                                  );
+                                },
+                                icon: const Icon(Icons.volume_up),
+                                label: const Text("Read OCR"),
+                              ),
+                            ),
+                          if (scannerProvider.ocrText.isNotEmpty &&
+                              scannerProvider.translatedText.isNotEmpty)
+                            const SizedBox(width: 10),
+                          if (scannerProvider.translatedText.isNotEmpty)
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: () {
+                                  _speak(scannerProvider.translatedText, "en-US"); // Always read translations in English
+                                },
+                                icon: const Icon(Icons.volume_up),
+                                label: const Text("Read Translation"),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10), // Add spacing between the rows
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () => _flutterTts.stop(),
+                              icon: const Icon(Icons.stop),
+                              label: const Text("Stop Reading"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 10),
 
                 // Display the translation source
                 if (_translationSource.isNotEmpty)
