@@ -8,6 +8,7 @@ import 'package:se_wmp_project/pages/scanner_page.dart';
 import 'package:se_wmp_project/pages/courses_page.dart';
 import 'package:se_wmp_project/pages/dictionary_page.dart';
 import 'package:se_wmp_project/providers/scanner_provider.dart';
+import 'package:se_wmp_project/providers/user_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,9 +16,10 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // Initialize LanguageProvider for state management
+        // Initialize Providers for state management
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => ScannerProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: const MyApp(),
     ),
@@ -60,7 +62,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blue, // FloatingActionButton color
         ),
       ),
-      home: const LoginPage(), // Set the home to the new widget
+      home:  LoginPage(), // Set the home to the new widget
     );
   }
 }
