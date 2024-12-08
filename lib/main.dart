@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:se_wmp_project/providers/course_provider.dart';
 import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/pages/home_page.dart';
 import 'package:se_wmp_project/pages/login_page.dart';
@@ -20,6 +21,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LanguageProvider()),
         ChangeNotifierProvider(create: (_) => ScannerProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => CourseProvider()),
       ],
       child: const MyApp(),
     ),
@@ -62,7 +64,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blue, // FloatingActionButton color
         ),
       ),
-      home:  LoginPage(), // Set the home to the new widget
+      home: LoginPage(), // Set the home to the new widget
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-// import 'package:se_wmp_project/providers/user_provider.dart';
+import 'package:se_wmp_project/providers/user_provider.dart';
 import 'package:se_wmp_project/widgets/app_drawer.dart';
 import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/pages/practice_page.dart';
@@ -13,8 +13,8 @@ class HomePage extends StatelessWidget {
     // Access the LanguageProvider to get the current selected language
     final languageProvider = Provider.of<LanguageProvider>(context);
     // Access the UserProvider to get the currently logged in user for UID demo
-    // final userProvider = Provider.of<UserProvider>(context);
-    // final uid = userProvider.uid;
+    final userProvider = Provider.of<UserProvider>(context);
+    final uid = userProvider.uid;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Home Page")),
@@ -23,13 +23,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // // UID Demo
-            // Text(
-            //   uid != null
-            //     ? "$uid"
-            //     : "No user logged in.",
-            //   style: const TextStyle(fontSize: 18),
-            // ),
             // Display the current selected language
             const Text(
               "Selected Language:",
@@ -37,17 +30,6 @@ class HomePage extends StatelessWidget {
             ),
             Text(
               languageProvider.selectedLanguage, // Show the selected language
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-
-            // Display the currently selected course
-            const Text(
-              "Selected Course:",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              "Course1", // Show the selected language
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 20),

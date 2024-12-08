@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
+import 'package:se_wmp_project/pages/home_page.dart';
+import 'package:se_wmp_project/pages/practice_page.dart';
+import 'package:se_wmp_project/providers/course_provider.dart';
 import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/providers/user_provider.dart';
 import 'package:se_wmp_project/widgets/app_drawer.dart';
@@ -280,6 +283,27 @@ class CoursesPageState extends State<CoursesPage> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                icon: const Icon(Icons.play_arrow),
+                                onPressed: () async {
+                                  // Retrieve the course ID from the lesson entry
+                                  String courseId = lessonEntry["id"];
+
+                                  // Call the CourseProvider's selectCourse method to save the selected course
+                                  await Provider.of<CourseProvider>(context,
+                                          listen: false)
+                                      .selectCourse(context, courseId);
+
+                                  // Redirect to the PracticePage
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const PracticePage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              // Edit button
+                              IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () {
                                   _lessonTitleController.text =
@@ -324,6 +348,7 @@ class CoursesPageState extends State<CoursesPage> {
                                   );
                                 },
                               ),
+                              // Delete button
                               IconButton(
                                 icon: const Icon(Icons.delete),
                                 onPressed: () {
@@ -370,7 +395,7 @@ class CoursesPageState extends State<CoursesPage> {
                         );
                       },
                     ),
-            ),
+            )
         ],
       ),
       floatingActionButton: FloatingActionButton(
