@@ -56,19 +56,19 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // Button to navigate to the course page to select a course
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the courses page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CoursesPage()),
-                );
-              },
-              child: const Text("Select a Course"),
-            ),
+            // // Button to navigate to the course page to select a course
+            // ElevatedButton(
+            //   onPressed: () {
+            //     // Navigate to the courses page
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => CoursesPage()),
+            //     );
+            //   },
+            //   child: const Text("Select a Course"),
+            // ),
 
-            const SizedBox(height: 30),
+            // const SizedBox(height: 30),
 
             // Button to navigate to the Practice page
             ElevatedButton(
