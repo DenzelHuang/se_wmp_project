@@ -20,6 +20,7 @@ class PracticePageState extends State<PracticePage> {
   String _feedbackMessage = '';
   bool _showNextWordButton = false;
   int _currentWordIndex = 0; // Index to track the current word
+  bool _isLoading = true; // Loading state
 
   @override
   void initState() {
@@ -34,13 +35,7 @@ class PracticePageState extends State<PracticePage> {
         Provider.of<CourseProvider>(context, listen: false).selectedCourseId;
     final userId = Provider.of<UserProvider>(context, listen: false).uid;
 
-    print("Fetching words...");
-    print("Language: $language");
-    print("Selected Course: $selectedCourse");
-    print("User ID: $userId");
-
     if (language == null || selectedCourse == null || userId == null) {
-      print("Error: Missing required identifiers.");
       setState(() {
         _currentWordData = null;
       });
@@ -58,24 +53,22 @@ class PracticePageState extends State<PracticePage> {
           .collection('words')
           .get();
 
-      print("Fetched ${snapshot.docs.length} words from Firestore.");
-
       if (snapshot.docs.isNotEmpty) {
         // Convert documents to list and shuffle
         _words = snapshot.docs.map((doc) => doc.data()).toList();
         _words.shuffle(); // Shuffle the words
 
-        print("Shuffled words: $_words");
-
         setState(() {
           _currentWordIndex = 0; // Start from the first word
           _currentWordData = _words[_currentWordIndex];
+          _isLoading = false; // Stop loading when words are fetched
         });
       } else {
         print("No words found in the collection.");
         setState(() {
           _words = [];
           _currentWordData = null;
+          _isLoading = false;
         });
       }
     } catch (e) {
@@ -83,6 +76,7 @@ class PracticePageState extends State<PracticePage> {
       setState(() {
         _words = [];
         _currentWordData = null;
+        _isLoading = false;
       });
     }
   }
@@ -124,71 +118,74 @@ class PracticePageState extends State<PracticePage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
-          child: _currentWordData == null
-              ? const Text(
-                  "No words available for this lesson.",
-                  style: TextStyle(fontSize: 18),
-                  textAlign: TextAlign.center,
-                )
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      "Guess the French Word:",
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          child: _isLoading
+              ? const CircularProgressIndicator() // Show loading indicator
+              : _currentWordData == null
+                  ? const Text(
+                      "No words available for this lesson.",
+                      style: TextStyle(fontSize: 18),
                       textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      _currentWordData?["meaning"] ?? '',
-                      style: const TextStyle(
-                          fontSize: 24, fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    TextField(
-                      controller: _controller,
-                      onSubmitted: (_) => _checkAnswer(),
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        hintText: "Enter the French word...",
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 30),
+                        const Text(
+                          "Guess the French Word:",
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Theme.of(context).primaryColor),
+                        const SizedBox(height: 20),
+                        Text(
+                          _currentWordData?["meaning"] ?? '',
+                          style: const TextStyle(
+                              fontSize: 24, fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: _checkAnswer,
-                      child: const Text("Check Answer"),
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      _feedbackMessage,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: _showNextWordButton ? Colors.green : Colors.red,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    if (_showNextWordButton)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: ElevatedButton(
-                          onPressed: _nextWord, // Go to the next word
-                          child: const Text("Next Word"),
+                        const SizedBox(height: 20),
+                        TextField(
+                          controller: _controller,
+                          onSubmitted: (_) => _checkAnswer(),
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            hintText: "Enter the French word...",
+                            enabledBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  color: Theme.of(context).primaryColor),
+                            ),
+                          ),
                         ),
-                      ),
-                  ],
-                ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: _checkAnswer,
+                          child: const Text("Check Answer"),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          _feedbackMessage,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                _showNextWordButton ? Colors.green : Colors.red,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        if (_showNextWordButton)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 20),
+                            child: ElevatedButton(
+                              onPressed: _nextWord, // Go to the next word
+                              child: const Text("Next Word"),
+                            ),
+                          ),
+                      ],
+                    ),
         ),
       ),
     );

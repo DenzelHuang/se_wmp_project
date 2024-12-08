@@ -23,7 +23,7 @@ class CourseProvider with ChangeNotifier {
     try {
       // Reference to the course document in the Firestore collection
       DocumentSnapshot courseSnapshot = await FirebaseFirestore.instance
-          .collection('users')
+          .collection('Users')
           .doc(userId)
           .collection('courses')
           .doc(selectedLanguage)
