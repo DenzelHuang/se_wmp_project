@@ -9,7 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:se_wmp_project/pages/word_detail_page.dart';
 import 'package:se_wmp_project/providers/language_provider.dart';
 import 'package:se_wmp_project/providers/user_provider.dart';
-import 'package:se_wmp_project/widgets/app_drawer.dart';
 
 class LessonDetailPage extends StatefulWidget {
   final String lessonId;
@@ -468,7 +467,6 @@ class _LessonDetailPageState extends State<LessonDetailPage> {
           ),
         ],
       ),
-      drawer: AppDrawer(),
       body: Column(
         children: [
           Padding(
