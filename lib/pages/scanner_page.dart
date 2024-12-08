@@ -240,12 +240,12 @@ class _ScannerPageState extends State<ScannerPage> {
                     const SizedBox(width: 10), // Add spacing between the buttons
 
                     // Add to Dictionary button
-                    Expanded(child: 
-                      ElevatedButton(
-                        onPressed: () {}, // Placeholder function
-                        child: const Text("Add to Dictionary"),
-                      ),
-                    ),
+                    // Expanded(child: 
+                    //   ElevatedButton(
+                    //     onPressed: () {}, // Placeholder function
+                    //     child: const Text("Add to Dictionary"),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 10),
