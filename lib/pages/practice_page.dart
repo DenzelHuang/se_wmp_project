@@ -132,7 +132,7 @@ class PracticePageState extends State<PracticePage> {
                       children: [
                         const SizedBox(height: 30),
                         const Text(
-                          "Guess the French Word:",
+                          "Guess the Word:",
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
@@ -150,7 +150,7 @@ class PracticePageState extends State<PracticePage> {
                           onSubmitted: (_) => _checkAnswer(),
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
-                            hintText: "Enter the French word...",
+                            hintText: "Enter the word...",
                             enabledBorder: const OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.grey),
                             ),
